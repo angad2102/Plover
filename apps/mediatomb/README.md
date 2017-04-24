@@ -1,0 +1,2 @@
+- ./mk
+- ./generate_database [your_ip_address] (*do not use 127.0.0.1)
