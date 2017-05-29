@@ -1,3 +1,8 @@
+# Plover
+## Comparison with vSphere
+Our benchmarking results on SSDB of vSphere FT have been approved by VMware; Plover is about 3X faster than vSphere FT on variant key range.
+![benchmarking results on SSDB of Plover and vSphere](figures/ssdb_vsphere.png)
+
 ## How to setup/test Plover
 
 Tested using Ubuntu 16.04.2 (64bit), MLNX_OFED_LINUX-3.4-2.0.0.0-ubuntu16.04-x86_64
