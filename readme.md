@@ -6,7 +6,7 @@ Our benchmarking results on the key-value store [SSDB](http://ssdb.io/) of vSphe
 
 The goal of our benchmarking is to test the performance of vSphere FT feature under the workloads which would dirty different number of memory pages.
 
-The results show Plover is about 3X faster than vSphere FT on variant key range.
+The results show Plover is about 3X faster than vSphere FT on SSDB under variant key range.
 
 ### Benchmarking Details
 Below are some details of our benchmarking on vSphere 6.5 Fault Tolerance and Plover.
