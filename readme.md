@@ -2,7 +2,7 @@
 Plover is a fault-tolerance system built on top of KVM. In Plover, secondary runs concurrently with the primary and they receive the same total order of network input packets. When Plover detects the server program running in VM becomes idle, a synchronization between primary and secondary is invoked. During a synchronization, the primary only needs to transfer the divergent dirty pages to the secondary.
 
 ## Comparison with vSphere FT
-Our benchmarking results on the key-value store [SSDB](http://ssdb.io/) of vSphere Fault Tolerance have been approved by VMware.
+Our benchmarking results on [SSDB](http://ssdb.io/) of vSphere Fault Tolerance have been approved by VMware.
 
 The goal of our benchmarking is to test the performance of vSphere FT feature under the workloads which would dirty different number of memory pages.
 
