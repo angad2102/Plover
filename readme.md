@@ -6,20 +6,16 @@ Our benchmarking methodology is consistent to VMware standards and our results o
 
 The goal of our benchmarking is to test the performance of vSphere FT feature under the workloads which would dirty different number of memory pages.
 
-The results show Plover is about 3X faster than vSphere on SSDB in variant key range.
+**The results show Plover is about 3X faster than vSphere on SSDB in variant key range.**
 
 ### Benchmarking Details
 Below are some details of our benchmarking on vSphere 6.5 Fault Tolerance and Plover.
 
-Table 1 shows our performance results of Plover and vSphere running SSDB with different workloads (size of key space).
+Figure 1 shows our performance results of Plover and vSphere running SSDB with different workloads (size of key space).
 
-size of key space | vSphere FT | Plover | unreplicated execution on KVM
------------- | ------------- | ------------- | -------------
--r 100 | 6162.13 req/s | 16875.52 req/s | 23789.89 req/s
--r 100000 | 4734.61 req/s | 15546.15 req/s | 18958.2 req/s
--r 100000000 | 3985.65 req/s | 14935.95 req/s | 18069.56 req/s
+![ssdb vsphere](figures/ssdb_vsphere.png)
 
-Table 2 shows the number of dirty pages for a synchronization and the same rate of dirty pages found in Plover.
+Table 1 shows the number of dirty pages for a synchronization and the same rate of dirty pages found in Plover.
 
 size of key space | # of dirty pages | same rate
 ------------ | ------------- | -------------
@@ -34,8 +30,8 @@ The figures below are the bandwidth consumption and CPU usages of running SSDB w
 ![vSphere CPU-Secondary](figures/cpu_secondary.png)
 
 ### Performance Analysis
-As you can see from table 1, the throughput of vSphere drops down when size of key space increases. We think this drop comes from the number of dirty pages (verified in table 2) and the saturated bandwidth (bandwidth figure).
-On the other hand, since the same rate of dirty pages is very high during a synchronization (table 2), Plover only needs to transfer a very small amount of dirty pages. Therefore, Plover's throughput in table 1 did not go down too much.
+As you can see from figure 1, the throughput of vSphere drops down when size of key space increases. We think this drop comes from the number of dirty pages (verified in table 1) and the saturated bandwidth (bandwidth figure).
+On the other hand, since the same rate of dirty pages is very high during a synchronization (table 1), Plover only needs to transfer a very small amount of dirty pages. Therefore, Plover's throughput in figure 1 did not go down too much.
 
 We also ran a smaller workload to test vSphere and found the bandwidth consumption of vSphere increases with the size of key space.
 
