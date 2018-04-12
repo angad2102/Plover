@@ -2,6 +2,7 @@
 #include <libnl3/netlink/route/class.h>
 #include <libnl3/netlink/cli/utils.h>
 #include <libnl3/netlink/cli/tc.h>
+#include <libnl3/netlink/route/tc.h>
 #include <libnl3/netlink/cli/qdisc.h>
 #include <libnl3/netlink/cli/link.h>
 
@@ -12,6 +13,10 @@
 #include <sys/ioctl.h>
 
 #include "output-buffer.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+//#include "net/if.h"
 
 //#define DEBUG_MC
 //#define DEBUG_MC_VERBOSE
@@ -46,13 +51,14 @@ static struct nl_cache          *link_cache = NULL;
 static struct rtnl_tc_ops       *ops        = NULL;
 static struct nl_cli_tc_module  *tm         = NULL;
 static int first_nic_chosen = 0;
+static uint64_t last_checkpoint_out_packets =0;
 
 #define START_BUFFER (1000*1000*1000 / 8)
 static int buffer_size = START_BUFFER, new_buffer_size = START_BUFFER;
 static const char * parent = "root";
 static bool buffering_enabled = false;
 static const char * BUFFER_NIC_PREFIX = "ifb";
-
+static char dev[MC_DEV_NAME_MAX_SIZE], buffer_dev[MC_DEV_NAME_MAX_SIZE];
 static int mc_deliver(int update)
 {
     int err, flags = NLM_F_CREATE | NLM_F_REPLACE;
@@ -219,7 +225,6 @@ out:
  */
 int mc_enable_buffering(void)
 {
-    char dev[MC_DEV_NAME_MAX_SIZE], buffer_dev[MC_DEV_NAME_MAX_SIZE];
     int prefix_len = 0;
     int buffer_prefix_len = strlen(BUFFER_NIC_PREFIX);
 
@@ -318,13 +323,41 @@ int mc_enable_buffering(void)
 		goto failed;
 	}
 
-
     return 0;
 
 failed:
     mc_disable_buffering();
     return -EINVAL;
 }
+
+/*
+ * Returns the number of network packets sent since the last count 
+ */
+uint64_t out_packets(void){
+
+uint64_t packets_out=0;
+struct nl_cache *cache;
+struct rtnl_link *link;
+uint64_t result  = 0;
+
+if (rtnl_link_alloc_cache(sock, AF_UNSPEC, &cache) < 0){
+	fprintf(stderr, "Link Cache Allot error\n");
+}
+
+if (!(link = rtnl_link_get_by_name(cache, buffer_dev))){
+       fprintf(stderr, "Link error\n");
+}else{
+       packets_out = rtnl_link_get_stat(link,RTNL_LINK_TX_PACKETS);
+}
+
+result = last_checkpoint_out_packets-packets_out;
+
+last_checkpoint_out_packets = packets_out;
+
+return result;
+
+}
+
 
 int mc_start_buffer(void)
 {
@@ -341,10 +374,12 @@ int mc_start_buffer(void)
             return -EINVAL;
     }
 
+
     if ((err = rtnl_qdisc_plug_buffer((void *) qdisc)) < 0) {
         fprintf(stderr, "Unable to flush oldest checkpoint: %s\n", nl_geterror(err));
         return -EINVAL;
     }
+
 
     DDPRINTF("Inserted checkpoint barrier\n");
 
